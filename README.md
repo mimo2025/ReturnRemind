@@ -8,7 +8,6 @@ By: Mira Mohan
 I do my fair share of online shopping and have missed more return deadlines than I’d like to admit, so this project is both a learning exercise and an act of self-defense.
 
 ## Features
-
 ### Track Purchases
 - Store merchant, item, purchase date, and return window
 - Automatically compute the return deadline
@@ -34,7 +33,6 @@ I do my fair share of online shopping and have missed more return deadlines than
 - In-memory H2 database
 
 ## Why I Built This
-
 Return deadlines cause frustration for customers and result in avoidable chargebacks for card issuers.
 This project explores how a backend service can proactively:
   - Reduce disputes
