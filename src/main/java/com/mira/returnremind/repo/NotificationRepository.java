@@ -13,4 +13,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             NotificationStatus status,
             LocalDateTime before
     );
+
+    List<Notification> findByPurchaseIdAndStatus(Long purchaseId, NotificationStatus status);
 }

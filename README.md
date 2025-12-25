@@ -18,30 +18,21 @@ I do my fair share of online shopping and have missed more return deadlines than
 - 1-day-before reminder
 - Background scheduler picks up due notifications and “sends” them (via console logging for now)
 
+### Lifecycle Management
+- Purchases automatically archive once their return deadline passes
+- Archived purchases move to history and no longer receive reminders
+- Active and archived purchases are cleanly separated
+
 ### Clean Data Modeling
 - Entities: User, Purchase, Notification
-- Notification lifecycle: PENDING → SENT
+- Notification lifecycle: PENDING → SENT → SKIPPED
+- Designed to be extensible for real delivery (email/SMS/push)
 
 ### REST API
-- Create purchases via a clean REST endpoint
+- Create and view purchases via a clean REST endpoint
+- Separate endpoints for active purchases vs. purchase history
+- Tested via curl and Postman
 - H2 Console available for viewing data
-
-### Modern Spring Boot Service
-- Java 17
-- Spring Boot 3.x
-- Spring Web + JPA + Scheduling
-- In-memory H2 database
-
-## Why I Built This
-Return deadlines cause frustration for customers and result in avoidable chargebacks for card issuers.
-This project explores how a backend service can proactively:
-  - Reduce disputes
-  - Improve transparency
-  - Strengthen customer experience
-
-It also reflects how I think about systems design, APIs, scheduling, and data modeling — all key areas in fintech and backend engineering.
-
-Plus… it helps keep me from forgetting returns ever again.
 
 ## Tech Stack
 - Java 17
@@ -68,13 +59,14 @@ http://localhost:8080
 ```
 
 ## Example API Usage
+The examples below use curl for simplicity, but the same requests can be tested using Postman.
+A Postman collection is included in the repository for easier exploration.
 ### Create a Purchase
-(Assuming you've added a user with ID = 1)
+(Assuming you've added a user with id = 1)
 ```bash
-curl -X POST http://localhost:8080/api/purchases \
+curl -X POST http://localhost:8080/users/1/purchases \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": 1,
     "merchantName": "Amazon",
     "itemName": "Headphones",
     "purchaseDate": "2025-01-15",
@@ -89,8 +81,24 @@ This will:
 
 When the scheduled job runs, you'll see logs like:
 ```bash
-[NOTIFICATION] SEVEN_DAYS_BEFORE for purchase 5 at 2025-02-07T00:00
+[NOTIFICATION] SEVEN_DAYS_BEFORE for purchase 5 at 2025-02-07T09:00
 ```
+### View Active Purchases
+Returns purchases that are still within their return window:
+```bash
+curl http://localhost:8080/users/1/purchases
+```
+### View Purchase History
+Returns archived purchases whose return deadlines have passed:
+```bash
+curl http://localhost:8080/users/1/purchases/history
+```
+
+## API Testing
+- Requests can be tested using:
+  - curl (examples above)
+  - Postman (recommended for exploration)
+- Postman collection location: /postman/ReturnRemind.postman_collection.json
 
 ## Project Structure
 ```bash
@@ -112,6 +120,16 @@ src/main/java/com/mira/returnremind/
   └── controller/
         └── PurchaseController.java
 ```
+## Why I Built This
+Return deadlines cause frustration for customers and result in avoidable chargebacks for card issuers.
+This project explores how a backend service can proactively:
+- Reduce disputes
+- Improve transparency
+- Strengthen customer experience
+
+It also reflects how I think about systems design, APIs, scheduling, and data modeling — all key areas in fintech and backend engineering.
+
+Plus… it helps keep me from forgetting returns ever again.
        
 ## Future Enhancements
   - Email/SMS notification delivery

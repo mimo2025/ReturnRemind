@@ -2,6 +2,7 @@ package com.mira.returnremind.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Purchase {
@@ -17,6 +18,8 @@ public class Purchase {
     private LocalDate purchaseDate;
     private Integer returnWindowDays;
     private LocalDate returnDeadline;
+    private boolean archived;
+    private LocalDateTime archivedAt;
 
     // getters & setters
     public Long getId() { return id; }
@@ -39,5 +42,11 @@ public class Purchase {
 
     public LocalDate getReturnDeadline() { return returnDeadline; }
     public void setReturnDeadline(LocalDate returnDeadline) { this.returnDeadline = returnDeadline; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
+
+    public LocalDateTime getArchivedAt() { return archivedAt; }
+    public void setArchivedAt(LocalDateTime archivedAt) { this.archivedAt = archivedAt; }
 
 }

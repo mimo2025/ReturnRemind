@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.scheduling.annotation.Scheduled;
+import java.util.List;
+
 @Service
 public class PurchaseService {
 
@@ -79,4 +82,24 @@ public class PurchaseService {
 
         notificationRepo.save(n);
     }
+
+    @Scheduled(cron = "0 0 2 * * *") // daily at 2am
+    @Transactional
+    public void archiveExpiredPurchases() {
+        LocalDate today = LocalDate.now();
+        List<Purchase> expired = purchaseRepo.findByReturnDeadlineBeforeAndArchivedFalse(today);
+
+        for (Purchase p : expired) {
+            List<Notification> pending = notificationRepo.findByPurchaseIdAndStatus(
+                    p.getId(), NotificationStatus.PENDING
+            );
+
+            for (Notification n : pending) {
+                n.setStatus(NotificationStatus.SKIPPED);
+            }
+            p.setArchived(true);
+            p.setArchivedAt(LocalDateTime.now());
+        }
+    }
+
 }
