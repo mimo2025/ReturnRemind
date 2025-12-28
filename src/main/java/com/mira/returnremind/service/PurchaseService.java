@@ -61,12 +61,19 @@ public class PurchaseService {
 
         LocalDateTime sevenDaysBefore = deadline.minusDays(7).atStartOfDay();
         LocalDateTime oneDayBefore    = deadline.minusDays(1).atStartOfDay();
+        LocalDateTime deadlineReached = deadline.atStartOfDay();
 
         if (sevenDaysBefore.isAfter(LocalDateTime.now())) {
             createNotification(p, NotificationType.SEVEN_DAYS_BEFORE, sevenDaysBefore);
         }
         if (oneDayBefore.isAfter(LocalDateTime.now())) {
             createNotification(p, NotificationType.ONE_DAY_BEFORE, oneDayBefore);
+        }
+        if (!deadlineReached.isBefore(LocalDateTime.now())) {
+            createNotification(p, NotificationType.DEADLINE_REACHED, deadlineReached);
+        } else {
+            // If deadlineReached is already in the past, still create it as due *now* (optional)
+            createNotification(p, NotificationType.DEADLINE_REACHED, LocalDateTime.now());
         }
     }
 
